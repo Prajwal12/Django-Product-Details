@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"> </script>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script src = "https://code.highcharts.com/highcharts.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+
+</head>
+<body>
+
+<div class="container">
+
+     <form method="POST" id ="indexForm" >{% csrf_token %}
+
+             <label class="myLabel form_input"> From:</label>
+             <input class="mySelect form_input date_height" type="date" id="from" name="from">
+
+             <label class="myLabel form_input"> To:</label>
+             <input class="mySelect form_input date_height" type="date" id="to" name="to">
+             <select class="mySelect form_input" name="L1" id="L1_id" >
+                   <option value="" selected="selected">Select L1</option>>
+                    {% if filters %}
+                        {% for cat1 in filters.L1 %}
+                            <option value="{{cat1.category}}">{{cat1.category}}</option>
+                        {% endfor%}
+                   {% endif %}
+              </select>
+
+
+
+              <select class="mySelect form_input" name="L2" id="L2_id">
+
+              </select>
+
+
+              <select class="mySelect form_input" name="L3" id="L3_id">
+
+              </select>
+
+              <div style="display: flex;justify-content: center;align-items: center;height: 100%;margin-top: 10px;">
+                <input type="button" class="btn btn-success" id="btnSelected" value="Submit">
+              </div>
+
+     </form>
+
+     <table id="table_id" class="display">
+            <thead>
+                <tr id = "table_th">
+                </tr>
+            </thead>
+            <tbody id = "table_tr1">
+
+            </tbody>
+        </table>
+
+</div>
+    <div class="modal"  aria-hidden="true" id="myModal" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content" id="modal-content">
+            <div class="modal-body">
+              <p>Some text in the modal.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+<script type="text/javascript">
+
+
+
+            function populate_table(data, textStatus, jqXHR) {
+            console.log(data)
+
+
+                var th = $("#table_th")
+                            th.empty()
+                            th.append('<th>Sku ID</th>')
+                            th.append('<th>Title</th>')
+                            th.append('<th>Brand</th>')
+                            th.append('<th>Croma price</th>')
+                            th.append('<th>Amazon price</th>')
+                            th.append('<th>Flipkart price</th>')
+                            th.append('<th>Vijay_Sales price</th>')
+                            th.append('<th>RelianceDigital price</th>')
+                            th.append('<th>Croma Units sold</th>')
+                            th.append('<th>Sale price</th>')
+                 var mainTable = $('#table_id').DataTable()
+                var tr = $("#table_tr")
+                       for (var key in data){
+                            var v = data[key];
+                            for (var k in v){
+
+                                mainTable.row.add( [
+                                            v[k]["sku_id"],
+                                            v[k]["sku"],
+                                            v[k]["brand_name"],
+                                            v[k]["Croma"] ,
+                                            v[k]["Amazon"],
+                                            v[k]["FlipKart"],
+                                            v[k]["Vijay_Sales"],
+                                            v[k]["RelianceDigital"],
+                                            v[k]["RelianceDigital"],
+                                            v[k]["units_sold"],
+                                            v[k]["sale_price"]
+                                        ] ).draw( false );
+
+<!--                                tr.append('<tr>');-->
+<!--                                tr.append('<td value="'+ v[k]["sku_id"]+'">'+ v[k]["sku_id"]+ '</td>');-->
+<!--                                tr.append('<td value="'+ v[k]["sku"]+'">'+ v[k]["sku"] +'</td>');-->
+<!--                                tr.append('<td value="'+ v[k]["brand_name"]+'">'+ v[k]["brand_name"] +'</td>');-->
+<!--                                tr.append('<td value="'+ v[k]["Croma"]+'">'+ v[k]["Croma"] +'</td>');-->
+<!--                                tr.append('<td value="'+ v[k]["Amazon"]+'">'+ v[k]["Amazon"] +'</td>');-->
+<!--                                tr.append('<td value="'+ v[k]["FlipKart"]+'">'+ v[k]["FlipKart"] +'</td>');-->
+<!--                                tr.append('<td value="'+ v[k]["Vijay_Sales"]+'">'+ v[k]["Vijay_Sales"] +'</td>');-->
+<!--                                tr.append('<td value="'+ v[k]["RelianceDigital"]+'">'+ v[k]["RelianceDigital"] +'</td>');-->
+<!--                                tr.append('<td value="'+ v[k]["units_sold"]+'">'+ v[k]["units_sold"] +'</td>');-->
+<!--                                tr.append('<td value="'+ v[k]["sale_price"]+'">'+ v[k]["sale_price"] +'</td>');-->
+<!--                                tr.append('</tr>');-->
+                            }
+                        }
+
+
+<!--                $("#table_id").show();-->
+<!--                $('#table_id').DataTable();-->
+
+                var table = $('#table_id').DataTable();
+
+                $('#table_id tbody').on('click', 'tr', function () {
+
+                    var data = table.row( this ).data();
+                    console.log(data[0])
+                    $.ajax({
+                    url: "get-chart-data",
+                    data: {
+                      'sku_id': data[0]
+                    },
+                    success: function(result, textStatus, jqXHR){
+
+                        display_chart(result);
+                    }});
+
+                });
+            }
+
+             $("#btnSelected").click(function(){
+
+                     $.ajax({
+                      url: 'show-table-data',
+                      data: {
+                        'from' : $("#from").val(),
+                        'to' : $("#to").val(),
+                        'L1': $("#L1_id").val(),
+                        'L2': $("#L2_id").val(),
+                        'L3': $("#L3_id").val(),
+                      },
+                      beforeSend: function () {
+                        console.log('Loading...');
+                      },
+
+                      success: populate_table,
+                      error: function (xhr, ajaxOptions, thrownError) {
+                        alert(xhr.responseJSON['message']);
+                        alert("Please Try Again Later");
+                      }
+                    });
+             });
+
+             $("#L1_id").change(function () {
+                    console.log("hey there");
+                    // get the url of the `load_l2` view
+                    var L1 = $(this).val();  // get the selected filter from the HTML input
+                    console.log(L1);
+                    $.ajax({                       // initialize an AJAX request
+                    url: "load-L2",                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+                    data: {
+                      'L1': L1       // add the country id to the GET parameters
+                    },
+                    success: function (data, textStatus, jqXHR) {
+                            var dropdown = $("#L2_id")
+                            dropdown.empty()
+                            dropdown.append('<option value="" selected="selected">Select L2</option>')
+                            $.each(data,function(i,product_line){
+                            $("#L2_id").append('<option value="'+product_line+'">'+product_line+'</option>');
+
+                    });
+                    }
+
+                    });
+                 });
+
+                 $("#L2_id").change(function () {
+                    console.log("hey there");
+                    // get the url of the `load_l2` view
+                    var L2 = $(this).val();  // get the selected filter from the HTML input
+                    console.log(L2);
+                    $.ajax({                       // initialize an AJAX request
+                    url: "load-L3",                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+                    data: {
+                      'L2': L2       // add the country id to the GET parameters
+                    },
+                    success: function (data, textStatus, jqXHR) {
+                            var dropdown = $("#L3_id")
+                            dropdown.empty()
+                            dropdown.append('<option value="" selected="selected">Select L3</option>')
+                            $.each(data,function(i,brick){
+                            $("#L3_id").append('<option value="'+brick+'">'+brick+'</option>');
+                            });
+                    }
+
+                    });
+                 });
+
+
+            function display_chart(result) {
+            console.log(result)
+            var title = {
+               text: 'Product Performance Graph'
+            };
+            var subtitle = {
+               text: ''
+            };
+            var xAxis = {
+               categories: result["date_list"]
+            };
+            var yAxis = [{
+               title: {
+                  text: 'Price '
+               }}
+               ];
+            var plotOptions = {
+               line: {
+                  dataLabels: {
+                     enabled: false
+                  },
+                  enableMouseTracking: false
+               }
+            };
+            var series = [{
+                  name: 'Amazon',
+
+                  data: result['Amazon']
+               },
+               {
+                  name: 'FlipKart',
+
+                  data: result['FlipKart']
+               },
+               {
+                  name: 'Croma',
+
+                  data: result['Croma']
+               },
+               {
+                  name: 'VijaySales',
+
+                  data: result['Vijay_Sales']
+               },
+               {
+                  name: 'RelianceDigital',
+
+                  data: result['RelianceDigital']
+               },
+               {
+                  name: 'Croma Sales',
+
+                  data: result['Croma_Sales_data']
+               }
+
+            ];
+
+            var json = {};
+            json.title = title;
+            json.subtitle = subtitle;
+            json.xAxis = xAxis;
+            json.yAxis = yAxis;
+            json.series = series;
+            json.plotOptions = plotOptions;
+            $('#modal-content').highcharts(json);
+            $('#myModal').modal('show');
+         }
+
+
+    </script>
+</body>
+
+</html>
+
+
